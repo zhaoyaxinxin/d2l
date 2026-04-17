@@ -1,0 +1,46 @@
+import torch
+import sys
+
+# 1. 生成随机张量并开启梯度追踪
+a_row=torch.randint(1, 100, (1,)).item()
+a_col=torch.randint(1, 100, (1,)).item()
+b_row=a_col
+b_col=torch.randint(1, 100, (1,)).item()
+
+beg = torch.randint(1, 100, (1,))
+en = torch.randint(1, 100, (1,))
+begin=torch.max(beg,en).item()
+end=torch.min(beg,en).item()
+
+a = torch.randn(int(a_row), int(a_col), requires_grad=True)+2*begin-end
+b = torch.randn(int(b_row), int(b_col), requires_grad=True)+2*begin-end
+
+a.retain_grad()
+b.retain_grad()
+
+# 2. 矩阵乘法
+c = a @ b  # 形状: (3, 5)
+
+# 3. 反向传播
+c.backward(torch.ones_like(c))
+
+# 4. 打印结果
+print("=" * 50)
+print("矩阵 A :")
+print(a)
+print("\n矩阵 B :")
+print(b)
+print("\n矩阵乘积 C = A @ B :")
+print(c)
+
+# 5. 验证梯度（添加类型安全检查）
+print("\n" + "=" * 50)
+
+# 打印实际的梯度值
+print("\nA 的梯度值:")
+print(a.grad)
+print("\nB 的梯度值:")
+print(b.grad)
+
+print("Python 版本:", sys.version)
+print("PyTorch 版本:", torch.__version__)
